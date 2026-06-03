@@ -1,4 +1,3 @@
-cat > /mnt/user-data/outputs/index.html << 'HTMLEOF'
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -131,8 +130,8 @@ body::before{
   </div>
 </div>
 <script>
-const GEMINI_KEY = 'AIzaSyAb8RN6KSe38EvazhvnI8OV6oqKxwqAow_V5koxDkem_u-K0-7Q';
-const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${GEMINI_KEY}`;
+const GEMINI_KEY = 'AQ.Ab8RN6J2s39_cOk4q0jbM7kU9NjaIgzIM1sfQKnPATMy1WLulQ';
+const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-latest:generateContent';
 const SYSTEM = `Eres JARVIS, el asistente de IA personal del usuario, inspirado en el JARVIS de Iron Man.
 - Hablas SIEMPRE en español
 - SIEMPRE llamas al usuario "señor" en cada respuesta
@@ -214,7 +213,7 @@ async function askJarvis(text){
   try{
     const res=await fetch(GEMINI_URL,{
       method:'POST',
-      headers:{'Content-Type':'application/json'},
+      headers:{'Content-Type':'application/json','X-goog-api-key':GEMINI_KEY},
       body:JSON.stringify({
         system_instruction:{parts:[{text:SYSTEM}]},
         contents:[{parts:[{text}]}]
@@ -283,4 +282,3 @@ window.addEventListener('load',()=>{
 </script>
 </body>
 </html>
-HTMLEOF
