@@ -8,6 +8,7 @@
 <meta name="theme-color" content="#00060f">
 <title>JARVIS</title>
 <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Rajdhani:wght@300;400;600&display=swap" rel="stylesheet">
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%;overflow:hidden;background:#00060f}
@@ -28,6 +29,13 @@ body::before{
 .header{display:flex;justify-content:space-between;align-items:flex-start;border-bottom:1px solid rgba(0,212,255,.2);padding-bottom:8px;flex-shrink:0;}
 .brand{font-family:'Orbitron',sans-serif;font-size:17px;font-weight:900;color:#00d4ff;text-shadow:0 0 20px #00d4ff,0 0 40px #0066ff;letter-spacing:4px;}
 .brand-sub{font-family:'Orbitron',sans-serif;font-size:8px;color:rgba(0,212,255,.4);letter-spacing:3px;margin-top:2px;}
+.header-right{display:flex;align-items:center;gap:8px;}
+.settings-btn{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.35);color:#00d4ff;width:30px;height:30px;border-radius:50%;font-size:13px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;-webkit-tap-highlight-color:transparent;position:relative;}
+.settings-btn:active{background:rgba(0,212,255,.2);transform:scale(.94)}
+.key-dot{position:absolute;top:-2px;right:-2px;width:8px;height:8px;border-radius:50%;background:#ff5566;box-shadow:0 0 6px #ff5566;}
+.key-dot.ok{background:#00ff9c;box-shadow:0 0 6px #00ff9c;}
+.rem-badge{position:absolute;top:-6px;right:-6px;min-width:15px;height:15px;border-radius:8px;background:#00d4ff;color:#00111f;font-family:'Orbitron',sans-serif;font-size:8px;display:flex;align-items:center;justify-content:center;padding:0 3px;box-shadow:0 0 6px #00d4ff;}
+.rem-badge.hidden{display:none;}
 .clock-block{text-align:right}
 .clock{font-family:'Orbitron',sans-serif;font-size:18px;font-weight:700;color:#00d4ff;text-shadow:0 0 15px #00d4ff;letter-spacing:2px;line-height:1;}
 .date{font-family:'Orbitron',sans-serif;font-size:9px;color:rgba(0,212,255,.45);letter-spacing:2px;margin-top:3px;}
@@ -88,6 +96,47 @@ body::before{
 .send-btn{background:rgba(0,212,255,.1);border:1px solid rgba(0,212,255,.4);color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:1px;padding:12px 12px;border-radius:6px;cursor:pointer;transition:all .2s;white-space:nowrap;-webkit-tap-highlight-color:transparent;}
 .send-btn:active{background:rgba(0,212,255,.25);transform:scale(.96)}
 .chat::-webkit-scrollbar{width:3px}.chat::-webkit-scrollbar-track{background:transparent}.chat::-webkit-scrollbar-thumb{background:rgba(0,212,255,.25);border-radius:2px}
+
+/* ---- Modal de clave API ---- */
+.key-modal-overlay{position:fixed;inset:0;background:rgba(0,4,10,.88);display:flex;align-items:center;justify-content:center;z-index:50;padding:20px;}
+.key-modal-overlay.hidden{display:none;}
+.key-modal{position:relative;width:100%;max-width:340px;background:linear-gradient(160deg,rgba(0,22,50,.97),rgba(0,8,20,.98));border:1px solid rgba(0,212,255,.4);border-radius:10px;padding:28px 22px 22px;box-shadow:0 0 40px rgba(0,212,255,.25),inset 0 0 30px rgba(0,212,255,.05);text-align:center;}
+.key-modal-close{position:absolute;top:8px;right:10px;background:none;border:none;color:rgba(0,212,255,.5);font-size:22px;cursor:pointer;line-height:1;-webkit-tap-highlight-color:transparent;}
+.key-modal-icon{font-size:30px;margin-bottom:8px;filter:drop-shadow(0 0 8px #00d4ff);}
+.key-modal-title{font-family:'Orbitron',sans-serif;font-size:13px;letter-spacing:3px;color:#00d4ff;text-shadow:0 0 12px #00d4ff;margin-bottom:10px;}
+.key-modal-desc{font-size:13px;line-height:1.55;color:rgba(180,225,255,.75);margin-bottom:16px;}
+.key-modal-input{width:100%;background:rgba(0,12,30,.85);border:1px solid rgba(0,212,255,.3);border-radius:6px;color:#00d4ff;font-family:'Rajdhani',sans-serif;font-size:14px;padding:11px 12px;outline:none;margin-bottom:6px;letter-spacing:1px;-webkit-appearance:none;}
+.key-modal-input::placeholder{color:rgba(0,212,255,.28)}
+.key-modal-input:focus{border-color:#00d4ff;box-shadow:0 0 12px rgba(0,212,255,.2)}
+.key-modal-error{font-size:11px;color:#ff6b6b;min-height:14px;margin-bottom:8px;}
+.key-modal-save{width:100%;background:rgba(0,212,255,.12);border:1px solid #00d4ff;color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:11px;letter-spacing:2px;padding:13px;border-radius:6px;cursor:pointer;margin-bottom:14px;-webkit-tap-highlight-color:transparent;}
+.key-modal-save:active{background:rgba(0,212,255,.28);transform:scale(.98);}
+.key-modal-link{font-size:11px;color:rgba(0,212,255,.55);text-decoration:none;border-bottom:1px dotted rgba(0,212,255,.4);}
+
+/* ---- Sección Google Calendar dentro del modal de ajustes ---- */
+.modal-divider{border-top:1px dashed rgba(0,212,255,.2);margin:16px 0 14px;}
+.google-row{font-size:11px;letter-spacing:1px;color:rgba(0,212,255,.6);font-family:'Orbitron',sans-serif;margin-bottom:10px;}
+.google-status{color:#00d4ff;}
+.google-btn{width:100%;background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.3);color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:10px;letter-spacing:1.5px;padding:11px;border-radius:6px;cursor:pointer;-webkit-tap-highlight-color:transparent;}
+.google-btn:active{background:rgba(0,212,255,.18);transform:scale(.98);}
+
+/* ---- Tarjeta de evento en el chat ---- */
+.event-card{background:rgba(0,212,255,.06);border:1px solid rgba(0,212,255,.3);border-radius:8px;padding:12px 14px;max-width:90%;}
+.event-card-title{font-weight:600;color:#00d4ff;margin-bottom:4px;}
+.event-card-time{font-size:12px;color:rgba(180,225,255,.75);margin-bottom:2px;}
+.event-card-loc{font-size:12px;color:rgba(180,225,255,.6);margin-bottom:8px;}
+.event-card-btn{display:inline-block;margin-top:8px;font-family:'Orbitron',sans-serif;font-size:9px;letter-spacing:1.5px;color:#00111f;background:#00d4ff;padding:9px 12px;border-radius:5px;text-decoration:none;box-shadow:0 0 12px rgba(0,212,255,.4);}
+
+/* ---- Modal de recordatorios ---- */
+.rem-add-row{display:flex;gap:6px;margin-bottom:14px;}
+.rem-add-input{flex:1;background:rgba(0,12,30,.85);border:1px solid rgba(0,212,255,.3);border-radius:6px;color:#00d4ff;font-family:'Rajdhani',sans-serif;font-size:14px;padding:10px 11px;outline:none;}
+.rem-add-input::placeholder{color:rgba(0,212,255,.28)}
+.rem-add-btn{background:rgba(0,212,255,.15);border:1px solid #00d4ff;color:#00d4ff;font-family:'Orbitron',sans-serif;font-size:10px;padding:0 14px;border-radius:6px;cursor:pointer;}
+.rem-list{max-height:240px;overflow-y:auto;text-align:left;}
+.rem-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:9px 2px;border-bottom:1px solid rgba(0,212,255,.12);}
+.rem-text{font-size:14px;color:rgba(200,235,255,.9);text-align:left;}
+.rem-del{background:none;border:1px solid rgba(255,90,100,.4);color:#ff8a90;width:24px;height:24px;border-radius:50%;font-size:11px;cursor:pointer;flex-shrink:0;}
+.rem-empty{font-size:13px;color:rgba(0,212,255,.4);padding:10px 0;}
 </style>
 </head>
 <body>
@@ -100,9 +149,17 @@ body::before{
       <div class="brand">JARVIS</div>
       <div class="brand-sub">J.A.R.V.I.S v2.0 · ACTIVO</div>
     </div>
-    <div class="clock-block">
-      <div class="clock" id="clock">00:00:00</div>
-      <div class="date" id="date">...</div>
+    <div class="header-right">
+      <button class="settings-btn" id="remindersBtn" title="Recordatorios">
+        📝<span class="rem-badge hidden" id="remBadge">0</span>
+      </button>
+      <button class="settings-btn" id="settingsBtn" title="Configurar clave API">
+        ⚙️<span class="key-dot" id="keyDot"></span>
+      </button>
+      <div class="clock-block">
+        <div class="clock" id="clock">00:00:00</div>
+        <div class="date" id="date">...</div>
+      </div>
     </div>
   </div>
   <div class="weather" id="weather"><div class="w-item">🌐 <span>Obteniendo clima...</span></div></div>
@@ -122,163 +179,88 @@ body::before{
   <div class="status" id="status">SISTEMA LISTO</div>
   <div class="chat" id="chat">
     <div class="chat-label">SALIDA JARVIS</div>
-    <div class="msg bot"><span class="lbl">JARVIS</span>Sistema iniciado. Soy JARVIS, su asistente personal. Toque el reactor o escriba para comenzar, señor.</div>
+    <div class="msg bot"><span class="lbl">JARVIS</span>Sistema iniciado. Soy JARVIS, su asistente personal. Puedo agendar eventos en su calendario y guardar recordatorios. Pulse ⚙️ para configurar su clave y comenzar, señor.</div>
   </div>
   <div class="input-row">
     <input class="txt-input" id="txtInput" type="text" placeholder="Escribe un comando..." autocomplete="off"/>
     <button class="send-btn" onclick="sendText()">ENVIAR</button>
   </div>
 </div>
+
+<!-- Modal de configuración de clave API -->
+<div class="key-modal-overlay" id="keyModalOverlay">
+  <div class="key-modal">
+    <button class="key-modal-close" id="keyModalClose">&times;</button>
+    <div class="key-modal-icon">🔑</div>
+    <div class="key-modal-title">CLAVE DE ACCESO</div>
+    <div class="key-modal-desc">Introduce tu propia clave de API de Anthropic (Claude) para activar a JARVIS. Se guarda únicamente en este navegador, en tu dispositivo — nunca se envía a ningún sitio salvo a Anthropic.</div>
+    <input type="password" id="apiKeyInput" class="key-modal-input" placeholder="sk-ant-..." autocomplete="off" spellcheck="false"/>
+    <div class="key-modal-error" id="keyModalError"></div>
+    <button class="key-modal-save" id="keyModalSave">GUARDAR Y ACTIVAR</button>
+    <a class="key-modal-link" href="https://console.anthropic.com/settings/keys" target="_blank" rel="noopener">¿No tienes una clave? Consíguela aquí →</a>
+
+    <div class="modal-divider"></div>
+    <div class="google-row">CALENDARIO GOOGLE: <span class="google-status" id="googleStatus">NO VINCULADO</span></div>
+    <button class="google-btn" id="googleConnectBtn">VINCULAR CON GOOGLE</button>
+  </div>
+</div>
+
+<!-- Modal de recordatorios -->
+<div class="key-modal-overlay hidden" id="remModalOverlay">
+  <div class="key-modal">
+    <button class="key-modal-close" id="remModalClose">&times;</button>
+    <div class="key-modal-icon">📝</div>
+    <div class="key-modal-title">RECORDATORIOS</div>
+    <div class="rem-add-row">
+      <input type="text" id="remAddInput" class="rem-add-input" placeholder="Nuevo recordatorio..." autocomplete="off"/>
+      <button class="rem-add-btn" id="remAddBtn">+</button>
+    </div>
+    <div class="rem-list" id="remindersList"></div>
+  </div>
+</div>
+
 <script>
-const GEMINI_KEY = 'AQ.Ab8RN6J2s39_cOk4q0jbM7kU9NjaIgzIM1sfQKnPATMy1WLulQ';
-const GEMINI_URL = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash-latest:generateContent';
-const SYSTEM = `Eres JARVIS, el asistente de IA personal del usuario, inspirado en el JARVIS de Iron Man.
+// ===== Configuración Claude (Anthropic) =====
+const ANTHROPIC_URL = 'https://api.anthropic.com/v1/messages';
+const ANTHROPIC_MODEL = 'claude-sonnet-4-6';
+const KEY_STORAGE = 'jarvis_anthropic_key';
+const REMINDERS_KEY = 'jarvis_reminders';
+// Reemplaza esto por tu propio Client ID de Google Cloud (OAuth, app web) para activar
+// la vinculación directa con Google Calendar. Si lo dejas así, JARVIS seguirá funcionando
+// con el calendario usando archivos .ics (un toque extra para añadir el evento).
+const GOOGLE_CLIENT_ID = 'TU_GOOGLE_CLIENT_ID.apps.googleusercontent.com';
+
+const SYSTEM_BASE = `Eres JARVIS, el asistente de IA personal del usuario, inspirado en el JARVIS de Iron Man.
 - Hablas SIEMPRE en español
 - SIEMPRE llamas al usuario "señor" en cada respuesta
 - Eres inteligente, preciso, formal pero con personalidad
 - Respuestas cortas y directas (máximo 3-4 oraciones)
 - Usas frases como "Por supuesto, señor", "Entendido, señor", "A su servicio, señor"
-- NUNCA dices que eres Gemini ni de Google. Eres JARVIS.
-- Si preguntan la hora o clima, diles que lo ven en el panel superior`;
+- NUNCA dices que eres Claude ni de Anthropic. Eres JARVIS.
+- Si preguntan la hora o clima, diles que lo ven en el panel superior
+- Si el usuario pide agendar, programar o recordar algo en una fecha u hora concreta, usa la herramienta crear_evento_calendario
+- Si el usuario pide anotar o recordar algo sin fecha concreta (una tarea, una idea), usa crear_recordatorio
+- Si el usuario pregunta qué tiene pendiente o qué recordatorios tiene, usa listar_recordatorios
+- Si el usuario pide marcar algo como hecho o eliminar un recordatorio, usa completar_recordatorio con su id (consíguelo primero con listar_recordatorios si no lo tienes)
+- Después de usar una herramienta, confirma brevemente lo que hiciste, en tu estilo habitual`;
 
-// CLOCK
-function updateClock(){
-  const n=new Date(),p=v=>String(v).padStart(2,'0');
-  document.getElementById('clock').textContent=`${p(n.getHours())}:${p(n.getMinutes())}:${p(n.getSeconds())}`;
-  const days=['DOM','LUN','MAR','MIÉ','JUE','VIE','SÁB'],months=['ENE','FEB','MAR','ABR','MAY','JUN','JUL','AGO','SEP','OCT','NOV','DIC'];
-  document.getElementById('date').textContent=`${days[n.getDay()]} ${n.getDate()} ${months[n.getMonth()]} ${n.getFullYear()}`;
+function localISO(d){
+  const p=v=>String(v).padStart(2,'0');
+  return `${d.getFullYear()}-${p(d.getMonth()+1)}-${p(d.getDate())}T${p(d.getHours())}:${p(d.getMinutes())}:${p(d.getSeconds())}`;
 }
-setInterval(updateClock,1000);updateClock();
-
-// WEATHER
-(async()=>{
-  try{
-    const g=await fetch('https://ipapi.co/json/');
-    const loc=await g.json();
-    const r=await fetch(`https://api.open-meteo.com/v1/forecast?latitude=${loc.latitude}&longitude=${loc.longitude}&current_weather=true&hourly=relative_humidity_2m`);
-    const d=await r.json();
-    const wi={0:'☀️',1:'🌤️',2:'⛅',3:'☁️',45:'🌫️',51:'🌦️',61:'🌧️',71:'❄️',80:'🌦️',95:'⛈️'};
-    document.getElementById('weather').innerHTML=`
-      <div class="w-item">${wi[d.current_weather.weathercode]||'🌡️'} <span class="w-val">${Math.round(d.current_weather.temperature)}°C</span></div>
-      <div class="w-item">💧 <span class="w-val">${d.hourly?.relative_humidity_2m?.[0]??'--'}%</span></div>
-      <div class="w-item">📍 <span>${loc.city||'Ubicación'}</span></div>`;
-  }catch(e){document.getElementById('weather').innerHTML=`<div class="w-item">🌐 <span>Sin datos</span></div>`;}
-})();
-
-// HELPERS
-function setStatus(t){document.getElementById('status').textContent=t;}
-function addMsg(text,role){
-  const chat=document.getElementById('chat');
-  const d=document.createElement('div');
-  d.className=`msg ${role}`;
-  const lbl=document.createElement('span');
-  lbl.className='lbl';lbl.textContent=role==='user'?'TÚ':'JARVIS';
-  d.appendChild(lbl);d.appendChild(document.createTextNode(text));
-  chat.appendChild(d);chat.scrollTop=chat.scrollHeight;
-}
-let typingEl=null;
-function showTyping(){
-  const chat=document.getElementById('chat');
-  typingEl=document.createElement('div');
-  typingEl.className='msg bot';
-  typingEl.innerHTML='<span class="lbl">JARVIS</span><div class="dots"><div class="dot"></div><div class="dot"></div><div class="dot"></div></div>';
-  chat.appendChild(typingEl);chat.scrollTop=chat.scrollHeight;
-}
-function removeTyping(){if(typingEl){typingEl.remove();typingEl=null;}}
-
-// SPEAK
-function speak(text){
-  if(!window.speechSynthesis)return;
-  window.speechSynthesis.cancel();
-  const u=new SpeechSynthesisUtterance(text);
-  u.lang='es-ES';u.rate=1.0;u.pitch=0.8;u.volume=1;
-  const load=()=>{
-    const voices=window.speechSynthesis.getVoices();
-    const v=voices.find(x=>x.lang.startsWith('es')&&/male/i.test(x.name))||voices.find(x=>x.lang.startsWith('es'))||voices[0];
-    if(v)u.voice=v;
-    window.speechSynthesis.speak(u);
-  };
-  if(window.speechSynthesis.getVoices().length>0)load();
-  else window.speechSynthesis.onvoiceschanged=load;
+function buildSystem(){
+  const now=new Date();
+  return `${SYSTEM_BASE}\nFecha y hora local actual del usuario: ${localISO(now)} (formato local, sin zona horaria). Usa este mismo formato para interpretar fechas relativas ("hoy", "mañana", "el viernes", "en una hora") y para los campos de fecha de las herramientas.`;
 }
 
-// ASK JARVIS (Gemini)
-let isLoading=false;
-async function askJarvis(text){
-  if(!text.trim()||isLoading)return;
-  isLoading=true;
-  addMsg(text,'user');
-  setStatus('PROCESANDO...');
-  showTyping();
-  try{
-    const res=await fetch(GEMINI_URL,{
-      method:'POST',
-      headers:{'Content-Type':'application/json','X-goog-api-key':GEMINI_KEY},
-      body:JSON.stringify({
-        system_instruction:{parts:[{text:SYSTEM}]},
-        contents:[{parts:[{text}]}]
-      })
-    });
-    const data=await res.json();
-    const reply=data?.candidates?.[0]?.content?.parts?.[0]?.text||'No pude procesar esa solicitud, señor.';
-    removeTyping();
-    addMsg(reply,'bot');
-    setStatus('SISTEMA LISTO');
-    speak(reply);
-  }catch(e){
-    removeTyping();
-    addMsg('Error de conexión, señor. Verifique su red.','bot');
-    setStatus('ERROR DE RED');
-  }finally{isLoading=false;}
-}
-
-// TEXT INPUT
-function sendText(){
-  const inp=document.getElementById('txtInput');
-  const t=inp.value.trim();
-  if(!t)return;
-  inp.value='';
-  askJarvis(t);
-}
-document.getElementById('txtInput').addEventListener('keydown',e=>{if(e.key==='Enter')sendText();});
-
-// VOICE
-let recognition=null,isListening=false;
-function toggleListening(){
-  const SR=window.SpeechRecognition||window.webkitSpeechRecognition;
-  if(!SR){addMsg('Su navegador no soporta reconocimiento de voz, señor.','bot');return;}
-  if(isListening){try{recognition.stop();}catch(e){}stopListen();return;}
-  recognition=new SR();
-  recognition.lang='es-ES';recognition.continuous=false;recognition.interimResults=false;
-  recognition.onstart=()=>{
-    isListening=true;
-    document.getElementById('reactorBtn').classList.add('listening');
-    document.getElementById('reactorBtn').textContent='🔴';
-    document.querySelectorAll('.wave-bar').forEach(b=>b.classList.add('anim'));
-    document.getElementById('tapHint').textContent='ESCUCHANDO...';
-    setStatus('ESCUCHANDO...');
-  };
-  recognition.onresult=e=>{const txt=e.results[0][0].transcript;stopListen();askJarvis(txt);};
-  recognition.onerror=e=>{
-    stopListen();
-    if(e.error==='not-allowed'){setStatus('MICRÓFONO BLOQUEADO');addMsg('Necesito permiso de micrófono, señor. Toque el candado en su navegador.','bot');}
-    else setStatus('ERROR DE VOZ');
-  };
-  recognition.onend=stopListen;
-  try{recognition.start();}catch(e){setStatus('ERROR DE VOZ');}
-}
-function stopListen(){
-  isListening=false;
-  document.getElementById('reactorBtn').classList.remove('listening');
-  document.getElementById('reactorBtn').textContent='🎙️';
-  document.querySelectorAll('.wave-bar').forEach(b=>b.classList.remove('anim'));
-  document.getElementById('tapHint').textContent='TOCA PARA HABLAR';
-  setStatus('SISTEMA LISTO');
-}
-
-window.addEventListener('load',()=>{
-  setTimeout(()=>speak('Sistema iniciado. Soy JARVIS, su asistente personal. Listo para servirle, señor.'),800);
-});
-</script>
-</body>
-</html>
+const TOOLS = [
+  {
+    name: 'crear_evento_calendario',
+    description: 'Crea un evento con fecha y hora en el calendario del usuario. Úsala cuando el usuario pida agendar, programar o recordar algo en un momento concreto.',
+    input_schema: {
+      type: 'object',
+      properties: {
+        titulo: { type:'string', description:'Título breve del evento' },
+        inicio: { type:'string', description:'Fecha y hora de inicio, formato YYYY-MM-DDTHH:mm:ss en hora local' },
+        fin: { type:'string', description:'Fecha y hora de fin, mismo formato. Si no se indica, se asume 1 hora después del inicio.' },
+        descripcion: { type:'string', description:'Detalles adicionales, opcional'
