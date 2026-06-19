@@ -3,256 +3,815 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>JARVIS</title>
-
+<title>J.A.R.V.I.S — Sistema Operativo</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
-*{
-margin:0;
-padding:0;
-box-sizing:border-box;
-font-family:Arial,sans-serif;
-}
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-body{
-background:#000814;
-color:#00d9ff;
-height:100vh;
-display:flex;
-justify-content:center;
-align-items:center;
-background-image:
-linear-gradient(rgba(0,217,255,.08) 1px, transparent 1px),
-linear-gradient(90deg, rgba(0,217,255,.08) 1px, transparent 1px);
-background-size:40px 40px;
-}
+  :root {
+    --bg: #0a0f1a;
+    --panel: #0d1628;
+    --accent: #00d4ff;
+    --accent2: #0066ff;
+    --text: #e8f4ff;
+    --muted: #4a7a9b;
+    --danger: #ff4444;
+    --success: #00ff88;
+  }
 
-.container{
-width:95%;
-max-width:900px;
-padding:20px;
-border:1px solid #00d9ff;
-background:rgba(0,0,0,.85);
-box-shadow:0 0 25px #00d9ff;
-border-radius:15px;
-}
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
 
-.topbar{
-display:flex;
-justify-content:space-between;
-align-items:center;
-margin-bottom:20px;
-}
+  /* CANVAS FONDO */
+  #canvas-bg {
+    position: fixed;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+  }
 
-.topbar h1{
-letter-spacing:6px;
-}
+  /* HEADER HUD */
+  .hud-header {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    border-bottom: 1px solid rgba(0,212,255,0.2);
+    background: rgba(10,15,26,0.9);
+    backdrop-filter: blur(10px);
+  }
 
-.topbar span{
-font-size:12px;
-opacity:.7;
-}
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
 
-.clock{
-text-align:right;
-}
+  .logo-ring {
+    width: 42px;
+    height: 42px;
+    position: relative;
+    flex-shrink: 0;
+  }
 
-#hora{
-font-size:35px;
-font-weight:bold;
-}
+  .logo-ring svg {
+    width: 100%;
+    height: 100%;
+    animation: ring-spin 6s linear infinite;
+  }
 
-.status{
-margin-bottom:20px;
-padding:10px;
-border:1px solid #00d9ff;
-text-align:center;
-border-radius:10px;
-}
+  @keyframes ring-spin {
+    to { transform: rotate(360deg); }
+  }
 
-.reactor{
-width:220px;
-height:220px;
-margin:auto;
-border-radius:50%;
-border:3px solid #00d9ff;
-display:flex;
-justify-content:center;
-align-items:center;
-box-shadow:0 0 40px #00d9ff;
-}
+  .logo-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.3rem;
+    font-weight: 900;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    text-shadow: 0 0 20px rgba(0,212,255,0.5);
+  }
 
-.core{
-width:120px;
-height:120px;
-border-radius:50%;
-background:#00d9ff;
-box-shadow:0 0 60px #00d9ff;
-}
+  .logo-sub {
+    font-size: 0.6rem;
+    letter-spacing: 0.3em;
+    color: var(--muted);
+    font-family: 'Orbitron', monospace;
+    margin-top: 2px;
+  }
 
-.active{
-animation:pulse 1s infinite;
-}
+  .hud-stats {
+    display: flex;
+    gap: 24px;
+    align-items: center;
+  }
 
-@keyframes pulse{
-50%{
-transform:scale(1.1);
-}
-}
+  .stat-item {
+    text-align: center;
+  }
 
-.response{
-margin-top:30px;
-padding:20px;
-border-left:4px solid #00d9ff;
-font-size:18px;
-min-height:80px;
-}
+  .stat-label {
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    font-family: 'Orbitron', monospace;
+  }
 
-.input-area{
-display:flex;
-gap:10px;
-margin-top:20px;
-}
+  .stat-value {
+    font-size: 0.75rem;
+    color: var(--accent);
+    font-family: 'Orbitron', monospace;
+    font-weight: 700;
+  }
 
-input{
-flex:1;
-padding:15px;
-background:#001a2e;
-border:1px solid #00d9ff;
-color:white;
-border-radius:10px;
-}
+  .status-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--success);
+    box-shadow: 0 0 8px var(--success);
+    animation: pulse-dot 2s ease-in-out infinite;
+  }
 
-button{
-padding:15px 25px;
-background:#00d9ff;
-border:none;
-font-weight:bold;
-cursor:pointer;
-border-radius:10px;
-}
+  @keyframes pulse-dot {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.4; }
+  }
+
+  /* MAIN LAYOUT */
+  .main-layout {
+    position: relative;
+    z-index: 10;
+    flex: 1;
+    display: grid;
+    grid-template-columns: 180px 1fr 180px;
+    gap: 0;
+    overflow: hidden;
+  }
+
+  /* PANELES LATERALES HUD */
+  .hud-side {
+    padding: 16px 12px;
+    border-right: 1px solid rgba(0,212,255,0.1);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    overflow: hidden;
+  }
+
+  .hud-side.right {
+    border-right: none;
+    border-left: 1px solid rgba(0,212,255,0.1);
+  }
+
+  .hud-widget {
+    background: rgba(13,22,40,0.8);
+    border: 1px solid rgba(0,212,255,0.15);
+    border-radius: 6px;
+    padding: 10px;
+  }
+
+  .widget-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.5rem;
+    letter-spacing: 0.25em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+
+  .mini-bar {
+    height: 3px;
+    background: rgba(0,212,255,0.1);
+    border-radius: 2px;
+    margin: 4px 0;
+    overflow: hidden;
+  }
+
+  .mini-bar-fill {
+    height: 100%;
+    border-radius: 2px;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    transition: width 1s ease;
+  }
+
+  .mini-label {
+    display: flex;
+    justify-content: space-between;
+    font-size: 0.55rem;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+
+  .scan-canvas {
+    width: 100%;
+    height: 70px;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+
+  .log-line {
+    font-size: 0.52rem;
+    color: var(--muted);
+    font-family: 'Orbitron', monospace;
+    line-height: 1.8;
+    letter-spacing: 0.05em;
+  }
+
+  .log-line.active {
+    color: var(--accent);
+  }
+
+  /* CHAT AREA */
+  .chat-area {
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .chat-messages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 20px 24px;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    scroll-behavior: smooth;
+  }
+
+  .chat-messages::-webkit-scrollbar { width: 4px; }
+  .chat-messages::-webkit-scrollbar-track { background: transparent; }
+  .chat-messages::-webkit-scrollbar-thumb { background: rgba(0,212,255,0.3); border-radius: 2px; }
+
+  .message {
+    display: flex;
+    gap: 12px;
+    animation: msg-appear 0.3s ease;
+  }
+
+  @keyframes msg-appear {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .message.user {
+    flex-direction: row-reverse;
+  }
+
+  .msg-avatar {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    font-weight: 700;
+    flex-shrink: 0;
+    border: 1px solid rgba(0,212,255,0.3);
+  }
+
+  .msg-avatar.jarvis {
+    background: rgba(0,102,255,0.2);
+    color: var(--accent);
+  }
+
+  .msg-avatar.user {
+    background: rgba(0,212,255,0.15);
+    color: var(--accent);
+  }
+
+  .msg-bubble {
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    line-height: 1.6;
+    font-weight: 300;
+  }
+
+  .message.jarvis .msg-bubble {
+    background: rgba(13,22,40,0.9);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-top-left-radius: 2px;
+    color: var(--text);
+  }
+
+  .message.user .msg-bubble {
+    background: rgba(0,102,255,0.2);
+    border: 1px solid rgba(0,102,255,0.3);
+    border-top-right-radius: 2px;
+    color: var(--text);
+  }
+
+  .msg-name {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+    margin-bottom: 4px;
+  }
+
+  .msg-time {
+    font-size: 0.55rem;
+    color: var(--muted);
+    margin-top: 4px;
+    letter-spacing: 0.1em;
+  }
+
+  /* TYPING INDICATOR */
+  .typing-indicator {
+    display: none;
+    align-items: center;
+    gap: 12px;
+    padding: 0 24px;
+    margin-bottom: 8px;
+  }
+
+  .typing-indicator.visible {
+    display: flex;
+  }
+
+  .typing-dots {
+    display: flex;
+    gap: 4px;
+    background: rgba(13,22,40,0.9);
+    border: 1px solid rgba(0,212,255,0.2);
+    padding: 10px 14px;
+    border-radius: 8px;
+    border-top-left-radius: 2px;
+  }
+
+  .typing-dots span {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: dot-bounce 1.2s ease-in-out infinite;
+  }
+
+  .typing-dots span:nth-child(2) { animation-delay: 0.2s; }
+  .typing-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+  @keyframes dot-bounce {
+    0%, 80%, 100% { transform: scale(0.6); opacity: 0.4; }
+    40% { transform: scale(1); opacity: 1; }
+  }
+
+  /* INPUT AREA */
+  .chat-input-area {
+    padding: 16px 24px 20px;
+    border-top: 1px solid rgba(0,212,255,0.15);
+    background: rgba(10,15,26,0.95);
+    backdrop-filter: blur(10px);
+  }
+
+  .input-wrapper {
+    display: flex;
+    gap: 10px;
+    align-items: flex-end;
+    background: rgba(13,22,40,0.9);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 8px;
+    padding: 12px 16px;
+    transition: border-color 0.3s;
+  }
+
+  .input-wrapper:focus-within {
+    border-color: rgba(0,212,255,0.6);
+    box-shadow: 0 0 15px rgba(0,212,255,0.1);
+  }
+
+  #user-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.85rem;
+    font-weight: 300;
+    resize: none;
+    max-height: 120px;
+    line-height: 1.5;
+  }
+
+  #user-input::placeholder {
+    color: var(--muted);
+    font-style: italic;
+  }
+
+  .send-btn {
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 6px;
+    width: 36px;
+    height: 36px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: opacity 0.2s, transform 0.1s;
+  }
+
+  .send-btn:hover { opacity: 0.85; }
+  .send-btn:active { transform: scale(0.95); }
+
+  .send-btn svg { width: 16px; height: 16px; fill: white; }
+
+  .input-hint {
+    font-size: 0.55rem;
+    color: var(--muted);
+    letter-spacing: 0.1em;
+    margin-top: 6px;
+    text-align: center;
+    font-family: 'Orbitron', monospace;
+  }
+
+  /* SCAN LINE EFFECT */
+  .scanline {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--accent), transparent);
+    opacity: 0.15;
+    animation: scanline-move 4s linear infinite;
+    pointer-events: none;
+    z-index: 100;
+  }
+
+  @keyframes scanline-move {
+    from { top: 0; }
+    to { top: 100vh; }
+  }
+
+  /* BOOT OVERLAY */
+  #boot-overlay {
+    position: fixed;
+    inset: 0;
+    background: var(--bg);
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    transition: opacity 0.8s ease;
+  }
+
+  #boot-overlay.fade-out {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .boot-ring {
+    width: 100px;
+    height: 100px;
+    animation: ring-spin 2s linear infinite;
+  }
+
+  .boot-text {
+    font-family: 'Orbitron', monospace;
+    font-size: 1.5rem;
+    font-weight: 900;
+    letter-spacing: 0.3em;
+    color: var(--accent);
+    text-shadow: 0 0 30px rgba(0,212,255,0.6);
+  }
+
+  .boot-lines {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.6rem;
+    letter-spacing: 0.1em;
+    color: var(--muted);
+    text-align: center;
+    line-height: 2;
+  }
+
+  .boot-bar-container {
+    width: 250px;
+    height: 3px;
+    background: rgba(0,212,255,0.1);
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  .boot-bar {
+    height: 100%;
+    background: linear-gradient(90deg, var(--accent2), var(--accent));
+    animation: boot-load 2.5s ease forwards;
+  }
+
+  @keyframes boot-load {
+    from { width: 0; }
+    to { width: 100%; }
+  }
+
+  /* KEY BUTTON */
+  .key-btn {
+    position: relative;
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.25);
+    border-radius: 8px;
+    width: 38px;
+    height: 38px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: var(--muted);
+    transition: all 0.2s;
+    flex-shrink: 0;
+  }
+  .key-btn:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    box-shadow: 0 0 12px rgba(0,212,255,0.2);
+  }
+  .key-btn svg { width: 18px; height: 18px; }
+  #key-status-dot {
+    position: absolute;
+    top: 6px; right: 6px;
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--danger);
+    box-shadow: 0 0 6px var(--danger);
+  }
+  #key-status-dot.active {
+    background: var(--success);
+    box-shadow: 0 0 6px var(--success);
+  }
+
+  /* MODAL */
+  .modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(6px);
+    z-index: 500;
+    display: none;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+
+  .modal-box {
+    background: #0d1628;
+    border: 1px solid rgba(0,212,255,0.3);
+    border-radius: 12px;
+    padding: 28px;
+    width: 420px;
+    max-width: 92vw;
+    box-shadow: 0 0 40px rgba(0,212,255,0.1);
+    animation: modal-in 0.25s ease;
+  }
+  @keyframes modal-in {
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+  }
+  .modal-title {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 0.2em;
+    color: var(--accent);
+  }
+  .modal-close {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 1.2rem;
+    cursor: pointer;
+    line-height: 1;
+    transition: color 0.2s;
+  }
+  .modal-close:hover { color: var(--text); }
+
+  .modal-label {
+    font-family: 'Orbitron', monospace;
+    font-size: 0.55rem;
+    letter-spacing: 0.2em;
+    color: var(--muted);
+    margin-bottom: 8px;
+  }
+  .modal-desc {
+    font-size: 0.75rem;
+    color: var(--muted);
+    line-height: 1.5;
+    margin-bottom: 16px;
+  }
+  .modal-desc a {
+    color: var(--accent);
+    text-decoration: none;
+  }
+
+  .key-input-wrap {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 16px;
+  }
+  .key-input {
+    flex: 1;
+    background: rgba(10,15,26,0.9);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 6px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    font-size: 0.8rem;
+    outline: none;
+    transition: border-color 0.2s;
+    letter-spacing: 0.05em;
+  }
+  .key-input:focus { border-color: var(--accent); }
+  .key-input::placeholder { color: var(--muted); }
+
+  .toggle-vis-btn {
+    background: rgba(0,212,255,0.08);
+    border: 1px solid rgba(0,212,255,0.2);
+    border-radius: 6px;
+    padding: 0 12px;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 0.75rem;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1em;
+    transition: all 0.2s;
+  }
+  .toggle-vis-btn:hover { color: var(--accent); border-color: var(--accent); }
+
+  .modal-actions { display: flex; gap: 10px; }
+  .btn-save {
+    flex: 1;
+    background: linear-gradient(135deg, var(--accent2), var(--accent));
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    color: white;
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: opacity 0.2s;
+  }
+  .btn-save:hover { opacity: 0.85; }
+  .btn-clear {
+    background: rgba(255,68,68,0.1);
+    border: 1px solid rgba(255,68,68,0.3);
+    border-radius: 6px;
+    padding: 10px 16px;
+    color: var(--danger);
+    font-family: 'Orbitron', monospace;
+    font-size: 0.65rem;
+    letter-spacing: 0.15em;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+  .btn-clear:hover { background: rgba(255,68,68,0.2); }
+
+  .modal-feedback {
+    margin-top: 12px;
+    font-size: 0.7rem;
+    font-family: 'Orbitron', monospace;
+    letter-spacing: 0.1em;
+    min-height: 18px;
+    text-align: center;
+  }
+  .modal-feedback.ok { color: var(--success); }
+  .modal-feedback.err { color: var(--danger); }
+
+  @media (max-width: 700px) {
+    .hud-side { display: none; }
+    .main-layout { grid-template-columns: 1fr; }
+  }
 </style>
-
 </head>
 <body>
 
-<div class="container">
-
-<div class="topbar">
-<div>
-<h1>JARVIS</h1>
-<span>SISTEMA ACTIVO</span>
+<!-- API KEY MODAL -->
+<div class="modal-overlay" id="key-modal" onclick="handleOverlayClick(event)">
+  <div class="modal-box">
+    <div class="modal-header">
+      <div class="modal-title">⚙ CONFIGURACIÓN DE API</div>
+      <button class="modal-close" onclick="toggleKeyModal()">✕</button>
+    </div>
+    <div class="modal-label">CLAVE DE API — ANTHROPIC</div>
+    <div class="modal-desc">
+      Ingrese su API Key de Anthropic para activar JARVIS.<br>
+      Obténgala en <a href="https://console.anthropic.com" target="_blank">console.anthropic.com</a> → API Keys.<br>
+      La clave se guarda localmente en su navegador y nunca se envía a terceros.
+    </div>
+    <div class="key-input-wrap">
+      <input class="key-input" type="password" id="api-key-input" placeholder="sk-ant-api03-..." autocomplete="off" spellcheck="false"/>
+      <button class="toggle-vis-btn" onclick="toggleKeyVisibility()">VER</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn-save" onclick="saveApiKey()">GUARDAR Y ACTIVAR</button>
+      <button class="btn-clear" onclick="clearApiKey()">BORRAR</button>
+    </div>
+    <div class="modal-feedback" id="modal-feedback"></div>
+  </div>
 </div>
 
-<div class="clock">
-<div id="hora"></div>
-<div id="fecha"></div>
-</div>
-</div>
-
-<div class="status">
-🟢 Sistema en línea
-</div>
-
-<div class="reactor" id="reactor">
-<div class="core"></div>
-</div>
-
-<div class="response" id="response">
-Sistema iniciado. Soy JARVIS, su asistente personal.
+<!-- Boot Overlay -->
+<div id="boot-overlay">
+  <svg class="boot-ring" viewBox="0 0 100 100" fill="none">
+    <circle cx="50" cy="50" r="44" stroke="rgba(0,212,255,0.15)" stroke-width="2"/>
+    <path d="M50 6 A44 44 0 0 1 94 50" stroke="#00d4ff" stroke-width="2" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="28" stroke="rgba(0,102,255,0.3)" stroke-width="1.5"/>
+    <path d="M50 22 A28 28 0 0 0 22 50" stroke="#0066ff" stroke-width="1.5" stroke-linecap="round"/>
+    <circle cx="50" cy="50" r="5" fill="#00d4ff" opacity="0.8"/>
+  </svg>
+  <div class="boot-text">J.A.R.V.I.S</div>
+  <div class="boot-lines" id="boot-log">INICIALIZANDO SISTEMAS...</div>
+  <div class="boot-bar-container">
+    <div class="boot-bar"></div>
+  </div>
 </div>
 
-<div class="input-area">
-<input type="text" id="command" placeholder="Escribe un comando...">
-<button onclick="sendCommand()">ENVIAR</button>
-</div>
+<div class="scanline"></div>
+<canvas id="canvas-bg"></canvas>
 
-</div>
+<!-- HEADER -->
+<header class="hud-header">
+  <div class="logo">
+    <div class="logo-ring">
+      <svg viewBox="0 0 42 42" fill="none">
+        <circle cx="21" cy="21" r="19" stroke="rgba(0,212,255,0.2)" stroke-width="1.5"/>
+        <path d="M21 2 A19 19 0 0 1 40 21" stroke="#00d4ff" stroke-width="1.5" stroke-linecap="round"/>
+        <circle cx="21" cy="21" r="12" stroke="rgba(0,102,255,0.3)" stroke-width="1"/>
+        <path d="M21 9 A12 12 0 0 0 9 21" stroke="#0066ff" stroke-width="1" stroke-linecap="round"/>
+        <circle cx="21" cy="21" r="3" fill="#00d4ff" opacity="0.9"/>
+      </svg>
+    </div>
+    <div>
+      <div class="logo-text">J.A.R.V.I.S</div>
+      <div class="logo-sub">JUST A RATHER VERY INTELLIGENT SYSTEM</div>
+    </div>
+  </div>
+  <div class="hud-stats">
+    <div class="stat-item">
+      <div class="stat-label">NÚCLEO</div>
+      <div class="stat-value" id="cpu-stat">98.2%</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">MEMORIA</div>
+      <div class="stat-value" id="mem-stat">64.7 TB</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">RED</div>
+      <div class="stat-value">SEGURA</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">ESTADO</div>
+      <div class="status-dot"></div>
+    </div>
+    <button class="key-btn" onclick="toggleKeyModal()" title="Configurar API Key">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="7.5" cy="15.5" r="3.5"/>
+        <path d="M11 12l9-9"/>
+        <path d="M17 6l2 2"/>
+        <path d="M14 9l2 2"/>
+      </svg>
+      <span id="key-status-dot"></span>
+    </button>
+  </div>
+</header>
 
-<script>
+<!-- MAIN -->
+<div class="main-layout">
 
-function actualizarHora(){
+  <!-- PANEL IZQ -->
+  <aside class="hud-side">
+    <div class="hud-widget">
+      <div class="widget-title">RENDIMIENTO</div>
+      <div class="mini-label"><span>CPU</span><span id="w-cpu">98%</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" id="bar-cpu" style="width:98%"></div></div>
+      <div class="mini-label"><span>RAM</span><span id="w-ram">71%</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" id="bar-ram" style="width:71%"></div></div>
+      <div class="mini-label"><span>RED</span><span id="w-net">45%</span></div>
+      <div class="mini-bar"><div class="mini-bar-fill" id="bar-net" style="width:45%"></div></div>
+    </div>
+    <div class="hud-widget">
+      <div class="widget-title">SEÑAL</div>
+      <canvas class="scan-canvas" id="wave-canvas" width="156" height="70"></canvas>
+    </div>
+    <div class="hud-widget">
+      <div class="widget-title">PROTOCOLOS ACTIVOS</div>
+      <div class="log-line active">▸ ENCRIPTACIÓN AES-512</div>
+      <div class="log-line active">▸ FIREWALL NIVEL 9</div>
+      <div class="log-line">▸ MODO STEALTH</div>
+      <div class="log-line active">▸ IA NEURAL v7.4</div>
+    </div>
+  </aside>
 
-const ahora = new Date();
-
-document.getElementById("hora").innerText =
-ahora.toLocaleTimeString();
-
-document.getElementById("fecha").innerText =
-ahora.toLocaleDateString();
-
-}
-
-setInterval(actualizarHora,1000);
-actualizarHora();
-
-function hablar(texto){
-
-const voz = new SpeechSynthesisUtterance(texto);
-
-voz.lang = "es-ES";
-voz.rate = 0.9;
-
-speechSynthesis.speak(voz);
-
-}
-
-function sendCommand(){
-
-const cmd =
-document.getElementById("command")
-.value.toLowerCase();
-
-const response =
-document.getElementById("response");
-
-const reactor =
-document.getElementById("reactor");
-
-reactor.classList.add("active");
-
-setTimeout(()=>{
-reactor.classList.remove("active");
-},2000);
-
-if(cmd.includes("hola")){
-
-response.innerHTML =
-"Hola señor. ¿Cómo puedo ayudarle?";
-
-hablar("Hola señor. ¿Cómo puedo ayudarle?");
-
-}
-else if(cmd.includes("hora")){
-
-const hora =
-new Date().toLocaleTimeString();
-
-response.innerHTML =
-"La hora actual es " + hora;
-
-hablar("La hora actual es " + hora);
-
-}
-else if(cmd.includes("jarvis")){
-
-response.innerHTML =
-"Estoy operativo y listo para recibir órdenes.";
-
-hablar("Estoy operativo y listo para recibir órdenes.");
-
-}
-else{
-
-response.innerHTML =
-"Comando no reconocido.";
-
-hablar("Comando no reconocido.");
-
-}
-
-}
-
-</script>
-
-</body>
-</html>
+  <!-- CHAT -->
+  <main class="chat-area">
+    <div class="chat-messages" id="chat-messages"></div>
+    <div class="typing-indicator" id="typing">
+      <div class="msg-avatar jarvis">J</div>
+      <div class="typing-dots">
+        <span></span><span></span><span></span>
+      </div>
+    </div>
+    <d
